@@ -41,19 +41,19 @@ const updateContactFn = async (req, res) => {
   const existingContact = await contactsService.getContactById(id);
 
   if (!existingContact) {
-    throw HttpError(404, "Contact not found");
+    throw createError(404, "Contact not found");
   }
 
   const updatedContact = await contactsService.updateContact(id, req.body);
 
   res.json(updatedContact);
 };
-const  updateContact = controllerWrapp(updateContactFn);
-const  createContact = controllerWrapp(createContactFn);
-const  deleteContact = controllerWrapp(deleteContactFn);
-const  getOneContact = controllerWrapp(getOneContactFn);
-const  getAllContacts = controllerWrapp(getAllContactsFn);
 
+const updateContact = controllerWrapp(updateContactFn);
+const createContact = controllerWrapp(createContactFn);
+const deleteContact = controllerWrapp(deleteContactFn);
+const getOneContact = controllerWrapp(getOneContactFn);
+const getAllContacts = controllerWrapp(getAllContactsFn);
 
 module.exports = {
   updateContact,

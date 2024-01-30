@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 const { nanoid } = require("nanoid");
-const contactsPath = path.resolve("./db/contacts.json");
+const contactsPath = path.join(__dirname, "../", "db", "/contacts.json");
 
 async function listContacts() {
   try {
@@ -32,6 +32,7 @@ async function addContact({ name, email, phone }) {
     };
     contacts.push(newContact);
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+    return newContact; 
   } catch (error) {
     throw error;
   }
@@ -43,11 +44,12 @@ async function removeContact(contactId) {
     const updatedContacts = contacts.filter(
       (contact) => contact.id !== contactId
     );
-    await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+    await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2)); 
   } catch (error) {
     throw error;
   }
 }
+
 async function updateContact(contactId, updatedData) {
   try {
     const contacts = await listContacts();
@@ -67,6 +69,7 @@ async function updateContact(contactId, updatedData) {
     throw error;
   }
 }
+
 module.exports = {
   updateContact,
   listContacts,
