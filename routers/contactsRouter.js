@@ -17,9 +17,7 @@ const {
 } = require("../controllers/contactsControllers.js");
 
 contactsRouter.get("/", controllerWrapp(listContacts));
-
 contactsRouter.get("/:id", controllerWrapp(getContactById));
-
 contactsRouter.delete("/:id", controllerWrapp(removeContact));
 
 contactsRouter.post(
@@ -34,8 +32,8 @@ contactsRouter.put(
   controllerWrapp(updateContact)
 );
 
-contactsRouter.put(
-  "/:id/favorite",
+contactsRouter.patch(
+  "/:id/favorite", 
   validateBody(updateStatusSchema),
   controllerWrapp(updateStatus)
 );
