@@ -12,8 +12,8 @@ const authChecker = async (req, res, next) => {
     next(HttpError(401));
   }
   try {
-    const { id } = jwt.verify(token, process.env.JWT_KEY);
-    const user = await User.findById(id);
+    const { userId  } = jwt.verify(token, process.env.JWT_KEY);
+    const user = await User.findById(userId);
     if (!user || !user.token || user.token !== token) {
       next(HttpError(401));
     }
