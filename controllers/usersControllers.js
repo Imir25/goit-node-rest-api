@@ -6,6 +6,7 @@ const gravatar = require("gravatar");
 const path = require("path");
 const jimp = require("jimp");
 const fs = require("fs/promises");
+const { nanoid } = require("nanoid");
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -19,12 +20,22 @@ const registerUser = async (req, res) => {
 
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email, { s: "200", d: "retro" }, true);
+  const verificationToken = nanoid();
 
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
     avatarURL,
+    verificationToken,
   });
+
+  const verificationEmail = {
+    to: email,
+    subject: "Verification email",
+    html: `<a href="${process.env.HOST}/api/users/verify/${verificationToken}" target="_blank ">Click for verification</a>`,
+  };
+
+  await sendEmail(verificationEmail);
 
   res.status(201).json({
     user: {
@@ -121,10 +132,46 @@ const updateUserAvatar = async (req, res) => {
   }
 };
 
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationToken: null,
+  });
+  res.status(200).json("Verification successful");
+};
+const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+  if (user.verify) {
+    throw HttpError(400, "Verification has already been passed");
+  }
+  const verificationEmail = {
+    to: email,
+    subject: "Verification email",
+    html: `<a href="${process.env.HOST}/api/users/verify/${verificationToken}" target="_blank ">Click for verification</a>`,
+  };
+  await sendEmail(verificationEmail);
+
+  return res.status(200).json({ message: "Verification email sent" });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   getCurrentUser,
   updateUserAvatar,
+  verifyEmail,
+  resendVerificationEmail,
 };
