@@ -1,5 +1,6 @@
 const { User } = require("../models/user");
 const HttpError = require("../helpers/HttpError");
+const sendEmail = require("../helpers/sendEmail");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
@@ -7,8 +8,6 @@ const path = require("path");
 const jimp = require("jimp");
 const fs = require("fs/promises");
 const { nanoid } = require("nanoid");
-const dotenv = require('dotenv');
-dotenv.config();
 
 const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -174,4 +173,4 @@ module.exports = {
   updateUserAvatar,
   verifyEmail,
   resendVerificationEmail,
-};
+}; 
